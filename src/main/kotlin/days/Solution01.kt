@@ -14,7 +14,8 @@ object Solution01 : Solution<List<String>>(AOC_YEAR, 1) {
         .toMap()
 
     private fun parseLine(line: String, calibrationMap: Map<String, Int>): Int {
-        fun getDigit(find: (Collection<String>) -> Pair<Int, String>?) = find(calibrationMap.keys)?.second?.let(calibrationMap::getValue) ?: 0
+        fun getDigit(find: (Collection<String>) -> Pair<Int, String>?) =
+            find(calibrationMap.keys)?.second?.let(calibrationMap::getValue) ?: 0
         return getDigit(line::findAnyOf) * 10 + getDigit(line::findLastAnyOf)
     }
 
