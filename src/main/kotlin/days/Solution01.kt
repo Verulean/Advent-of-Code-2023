@@ -10,11 +10,12 @@ object Solution01 : Solution<List<String>>(AOC_YEAR, 1) {
     private val numbers = (1..9).associateBy(Int::toString)
 
     private val words = sequenceOf("one", "two", "three", "four", "five", "six", "seven", "eight", "nine")
-            .mapIndexed { index, name -> name to index + 1 }
-            .toMap()
+        .mapIndexed { index, name -> name to index + 1 }
+        .toMap()
 
     private fun parseLine(line: String, calibrationMap: Map<String, Int>): Int {
-        return "${calibrationMap[line.findAnyOf(calibrationMap.keys)?.second]}${calibrationMap[line.findLastAnyOf(calibrationMap.keys)?.second]}".toInt()
+        fun getDigit(searchFunction: (Collection<String>) -> Pair<Int, String>?) = calibrationMap.getValue(checkNotNull(searchFunction(calibrationMap.keys)).second)
+        return getDigit(line::findAnyOf) * 10 + getDigit(line::findLastAnyOf)
     }
 
     override fun solve(input: List<String>): PairOf<Int> {
