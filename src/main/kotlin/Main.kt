@@ -1,10 +1,14 @@
-import days.Solutions
+import adventOfCode.Solution
 
 fun main(args: Array<String>) {
-    val indices = Solutions.indices
     args.map(String::toIntOrNull).forEach {
-        if (it == null || it - 1 !in indices) return
-        println("Day $it:")
-        Solutions[it - 1].run()
+        try {
+            val solution = Class.forName("days.Solution%02d".format(it)).kotlin.objectInstance
+            if (solution is Solution<*>) {
+                println("Day $it:")
+                solution.run()
+            }
+        } catch (_: ClassNotFoundException) {
+        }
     }
 }

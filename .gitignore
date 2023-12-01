@@ -5,6 +5,7 @@
 
 # Directories
 /.idea
+/lib
 /out
 /input
 
