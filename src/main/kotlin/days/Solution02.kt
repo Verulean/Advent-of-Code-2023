@@ -22,10 +22,7 @@ object Solution02 : Solution<List<String>>(AOC_YEAR, 2) {
             .last()
             .split("; ", ", ")
             .map { it.split(" ") }
-            .forEach {
-                val color = colorMap.getValue(it.last())
-                minCubes[color] = max(minCubes.getValue(color), it.first().toInt())
-            }
+            .forEach { minCubes.merge(colorMap.getValue(it.last()), it.first().toInt(), ::max) }
         return minCubes
     }
 
