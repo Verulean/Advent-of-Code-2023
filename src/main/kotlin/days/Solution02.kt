@@ -1,7 +1,8 @@
 package days
 
-import adventOfCode.*
-import adventOfCode.util.*
+import adventOfCode.InputHandler
+import adventOfCode.Solution
+import adventOfCode.util.PairOf
 import kotlin.math.max
 
 object Solution02 : Solution<List<String>>(AOC_YEAR, 2) {
