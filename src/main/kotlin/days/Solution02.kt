@@ -14,35 +14,25 @@ object Solution02 : Solution<List<String>>(AOC_YEAR, 2) {
 
     override fun getInput(handler: InputHandler) = handler.getInput(delimiter = "\n")
 
-    private fun parseGame(line: String): Sequence<Map<Color, Int>> {
-        return line.split(": ")
-            .last()
-            .split("; ")
-            .asSequence()
-            .map { draws ->
-                draws.split(", ")
-                    .map { it.split(" ") }
-                    .associate { colorMap.getValue(it.last()) to it.first().toInt() }
-            }
-    }
-
-    private fun minimumCubes(game: Sequence<Map<Color, Int>>): Map<Color, Int> {
+    private fun minimumCubes(game: String): Map<Color, Int> {
         val minCubes = Color.entries
             .associateWith { 0 }
             .toMutableMap()
-        game.forEach { draws ->
-            draws.forEach { (color, number) ->
-                minCubes[color] = max(minCubes.getValue(color), number)
+        game.split(": ")
+            .last()
+            .split("; ", ", ")
+            .map { it.split(" ") }
+            .forEach {
+                val color = colorMap.getValue(it.last())
+                minCubes[color] = max(minCubes.getValue(color), it.first().toInt())
             }
-        }
         return minCubes
     }
 
     override fun solve(input: List<String>): PairOf<Int> {
         var ans1 = 0
         var ans2 = 0
-        input.map(::parseGame)
-            .map(::minimumCubes)
+        input.map(::minimumCubes)
             .forEachIndexed { index, minCubes ->
                 val (red, green, blue) = Color.entries.map(minCubes::getValue)
                 if (red <= 12 && green <= 13 && blue <= 14) ans1 += index + 1
