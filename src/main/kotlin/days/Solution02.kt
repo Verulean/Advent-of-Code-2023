@@ -15,14 +15,12 @@ object Solution02 : Solution<List<String>>(AOC_YEAR, 2) {
     override fun getInput(handler: InputHandler) = handler.getInput(delimiter = "\n")
 
     private fun parseGame(line: String): Sequence<Map<Color, Int>> {
-        return line
-            .split(": ")
+        return line.split(": ")
             .last()
             .split("; ")
             .asSequence()
             .map { draws ->
-                draws
-                    .split(", ")
+                draws.split(", ")
                     .map { it.split(" ") }
                     .associate { colorMap.getValue(it.last()) to it.first().toInt() }
             }
