@@ -18,7 +18,7 @@ object Solution02 : Solution<List<String>>(AOC_YEAR, 2) {
         val minCubes = Color.entries
             .associateWith { 0 }
             .toMutableMap()
-        game.substringAfter(": ")
+        game.substringAfter(':')
             .split(';', ',')
             .map { it.trim().split(' ') }
             .forEach { minCubes.merge(colorMap.getValue(it.last()), it.first().toInt(), ::max) }
