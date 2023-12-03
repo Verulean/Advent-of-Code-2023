@@ -23,12 +23,9 @@ object Solution03 : Solution<List<String>>(AOC_YEAR, 3) {
         val colIndices = input[0].indices
 
         fun getNumbers(i: Int, j: Int): Map<Point2D, Int> {
-            val candidates = (i - 1..i + 1).filter(rowIndices::contains)
-                .flatMap { ii ->
-                    (j - 1..j + 1).filter(colIndices::contains)
-                        .map { jj -> ii to jj }
-                }
-                .filter { it != i to j }
+            val candidates = (i - 1..i + 1)
+                .flatMap { ii -> (j - 1..j + 1).map { jj -> ii to jj } }
+                .filter { (ii, jj) -> ii in rowIndices && jj in colIndices && (ii != i || jj != j) }
                 .toMutableSet()
             val numbers = mutableMapOf<Point2D, Int>()
             while (candidates.isNotEmpty()) {
