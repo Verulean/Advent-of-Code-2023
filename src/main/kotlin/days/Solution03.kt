@@ -5,55 +5,64 @@ import adventOfCode.Solution
 import adventOfCode.util.PairOf
 import adventOfCode.util.Point2D
 
-object Solution03 : Solution<List<CharArray>>(AOC_YEAR, 3) {
-    override fun getInput(handler: InputHandler) = handler.getInput("\n", true, String::toCharArray)
+object Solution03 : Solution<List<String>>(AOC_YEAR, 3) {
+    override fun getInput(handler: InputHandler) = handler.getInput("\n")
 
     private fun Char.isSymbol() = !this.isDigit() && this != '.'
 
     private fun Char.isGear() = this == '*'
 
-    override fun solve(input: List<CharArray>): PairOf<Int> {
-        val m = input.size
-        val n = input[0].size
-        val numberBuilder = StringBuilder(n)
-        val gearMap = mutableMapOf<Point2D, MutableList<Int>>()
+    private fun MutableSet<Point2D>.pop(): Point2D {
+        val ret = this.first()
+        this.remove(ret)
+        return ret
+    }
 
-        var ans1 = 0
+    override fun solve(input: List<String>): PairOf<Int> {
+        val rowIndices = input.indices
+        val colIndices = input[0].indices
 
-        fun checkNumber(i: Int, j: Int) {
-            val l = numberBuilder.length
-            if (l == 0) return
-            val number = numberBuilder.toString().toInt()
-            val isValid = (i - 1..i + 1).intersect(0..<m).any { ii ->
-                val js = if (ii != i) j - l - 1..j else listOf(j - l - 1, j)
-                js.intersect(0..<n).any { jj ->
-                    val cc = input[ii][jj]
-                    if (cc.isGear()) {
-                        if (ii to jj in gearMap) gearMap.getValue(ii to jj).add(number)
-                        else gearMap[ii to jj] = mutableListOf(number)
-                    }
-                    cc.isSymbol()
+        fun getNumbers(i: Int, j: Int): Map<Point2D, Int> {
+            val candidates = (i - 1..i + 1).filter(rowIndices::contains)
+                .flatMap { ii ->
+                    (j - 1..j + 1).filter(colIndices::contains)
+                        .map { jj -> ii to jj }
                 }
+                .toMutableSet()
+            val numbers = mutableMapOf<Point2D, Int>()
+            while (candidates.isNotEmpty()) {
+                val (ii, jj) = candidates.pop()
+                val row = input[ii]
+                if (!row[jj].isDigit()) continue
+                var jMin = jj
+                var jMax = jj
+                while (jMin > colIndices.first && row[jMin - 1].isDigit()) {
+                    jMin--
+                    candidates.remove(ii to jMin)
+                }
+                while (jMax < colIndices.last && row[jMax + 1].isDigit()) {
+                    jMax++
+                    candidates.remove(ii to jMax)
+                }
+                val number = row.substring(jMin, jMax + 1).toInt()
+                numbers[ii to jMin] = number
             }
-            if (isValid) ans1 += number
-            numberBuilder.clear()
+            return numbers
         }
 
-        input.forEachIndexed { i, row ->
-            row.forEachIndexed { j, c ->
-                if (c.isDigit()) {
-                    numberBuilder.append(c)
-                } else {
-                    checkNumber(i, j)
+        val numbers = mutableMapOf<Point2D, Int>()
+        var gearRatioSum = 0
+        for ((i, row) in input.withIndex()) {
+            for ((j, c) in row.withIndex()) {
+                if (!c.isSymbol()) continue
+                val new_numbers = getNumbers(i, j)
+                numbers += new_numbers
+                if (c.isGear() && new_numbers.size == 2) {
+                    gearRatioSum += new_numbers.values.reduce(Int::times)
                 }
             }
-            checkNumber(i, n)
         }
 
-        val ans2 = gearMap.values
-            .filter { it.size == 2 }
-            .sumOf { it.reduce(Int::times) }
-
-        return ans1 to ans2
+        return numbers.values.sum() to gearRatioSum
     }
 }
