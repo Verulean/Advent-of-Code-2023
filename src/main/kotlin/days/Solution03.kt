@@ -16,7 +16,7 @@ object Solution03 : Solution<List<CharArray>>(AOC_YEAR, 3) {
         val m = input.size
         val n = input[0].size
         val numberBuilder = StringBuilder(n)
-        val gearMap = mutableMapOf<Point2D, MutableList<Int>>().withDefault { mutableListOf() }
+        val gearMap = mutableMapOf<Point2D, MutableList<Int>>()
 
         var ans1 = 0
 
@@ -29,8 +29,8 @@ object Solution03 : Solution<List<CharArray>>(AOC_YEAR, 3) {
                 js.intersect(0..<n).any { jj ->
                     val cc = input[ii][jj]
                     if (cc.isGear()) {
-                        gearMap[ii to jj] = gearMap.getValue(ii to jj)
-                        gearMap[ii to jj]!!.add(number)
+                        if (!gearMap.containsKey(ii to jj)) gearMap[ii to jj] = mutableListOf(number)
+                        else gearMap[ii to jj].add(number)
                     }
                     cc.isSymbol()
                 }
