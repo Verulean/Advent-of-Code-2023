@@ -30,19 +30,20 @@ object Solution03 : Solution<List<String>>(AOC_YEAR, 3) {
                 .filter { it != row to col }
                 .toMutableSet()
             while (candidates.isNotEmpty()) {
-                var (i, jMin) = candidates.pop()
+                val (i, j) = candidates.pop()
                 val line = input[i]
-                if (!line[jMin].isDigit()) continue
-                var jMax = jMin
-                while (line.getOrNull(jMin - 1)?.digitToIntOrNull() != null) {
-                    jMin--
-                    candidates.remove(i to jMin)
-                }
-                while (line.getOrNull(jMax + 1)?.digitToIntOrNull() != null) {
-                    jMax++
-                    candidates.remove(i to jMax)
-                }
-                numbers[i to jMin] = line.substring(jMin, jMax + 1).toInt()
+                if (!line[j].isDigit()) continue
+                val jMin = (j downTo 0)
+                    .find {
+                        candidates.remove(i to j)
+                        !line[it].isDigit()
+                    } ?: (colIndices.first - 1)
+                val jMax = (j..colIndices.last)
+                    .find {
+                        candidates.remove(i to j)
+                        !line[it].isDigit()
+                    } ?: (colIndices.last + 1)
+                numbers[i to jMin] = line.substring(jMin + 1, jMax).toInt()
             }
             return numbers
         }
