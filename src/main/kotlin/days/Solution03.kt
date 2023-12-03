@@ -52,10 +52,10 @@ object Solution03 : Solution<List<String>>(AOC_YEAR, 3) {
         for ((i, row) in input.withIndex()) {
             for ((j, c) in row.withIndex()) {
                 if (!c.isSymbol()) continue
-                val new_numbers = getNumbers(i, j)
-                numbers += new_numbers
-                if (c.isGear() && new_numbers.size == 2) {
-                    gearRatioSum += new_numbers.values.reduce(Int::times)
+                val newNumbers = getNumbers(i, j)
+                numbers += newNumbers
+                if (c.isGear() && newNumbers.size == 2) {
+                    gearRatioSum += newNumbers.values.reduce(Int::times)
                 }
             }
         }
