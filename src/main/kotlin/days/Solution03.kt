@@ -22,37 +22,37 @@ object Solution03 : Solution<List<String>>(AOC_YEAR, 3) {
         val rowIndices = input.indices
         val colIndices = input[0].indices
 
-        fun getNumbers(i: Int, j: Int): Map<Point2D, Int> {
+        fun getNumbers(row: Int, col: Int): Map<Point2D, Int> {
             val numbers = mutableMapOf<Point2D, Int>()
-            val candidates = (i - 1..i + 1)
-                .flatMap { ii -> (j - 1..j + 1).map { jj -> ii to jj } }
-                .filter { (ii, jj) -> ii in rowIndices && jj in colIndices }
-                .filter { it != i to j }
+            val candidates = (row - 1..row + 1)
+                .flatMap { i -> (col - 1..col + 1).map { j -> i to j } }
+                .filter { (i, j) -> i in rowIndices && j in colIndices }
+                .filter { it != row to col }
                 .toMutableSet()
             while (candidates.isNotEmpty()) {
-                var (ii, jMin) = candidates.pop()
-                val row = input[ii]
-                if (!row[jMin].isDigit()) continue
+                var (i, jMin) = candidates.pop()
+                val line = input[i]
+                if (!line[jMin].isDigit()) continue
                 var jMax = jMin
-                while (jMin > colIndices.first && row[jMin - 1].isDigit()) {
+                while (jMin > colIndices.first && line[jMin - 1].isDigit()) {
                     jMin--
-                    candidates.remove(ii to jMin)
+                    candidates.remove(i to jMin)
                 }
-                while (jMax < colIndices.last && row[jMax + 1].isDigit()) {
+                while (jMax < colIndices.last && line[jMax + 1].isDigit()) {
                     jMax++
-                    candidates.remove(ii to jMax)
+                    candidates.remove(i to jMax)
                 }
-                numbers[ii to jMin] = row.substring(jMin, jMax + 1).toInt()
+                numbers[i to jMin] = line.substring(jMin, jMax + 1).toInt()
             }
             return numbers
         }
 
         val numbers = mutableMapOf<Point2D, Int>()
         var gearRatioSum = 0
-        for ((i, row) in input.withIndex()) {
-            for ((j, c) in row.withIndex()) {
+        for ((row, line) in input.withIndex()) {
+            for ((col, c) in line.withIndex()) {
                 if (!c.isSymbol()) continue
-                val newNumbers = getNumbers(i, j)
+                val newNumbers = getNumbers(row, col)
                 numbers += newNumbers
                 if (c.isGear() && newNumbers.size == 2) {
                     gearRatioSum += newNumbers.values.reduce(Int::times)
