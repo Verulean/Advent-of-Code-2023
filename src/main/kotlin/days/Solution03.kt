@@ -27,12 +27,11 @@ object Solution03 : Solution<List<String>>(AOC_YEAR, 3) {
             val candidates = (row - 1..row + 1)
                 .flatMap { i -> (col - 1..col + 1).map { j -> i to j } }
                 .filter { (i, j) -> i in rowIndices && j in colIndices }
-                .filter { it != row to col }
+                .filter { (i, j) -> input[i][j].isDigit() }
                 .toMutableSet()
             while (candidates.isNotEmpty()) {
                 val (i, j) = candidates.pop()
                 val line = input[i]
-                if (!line[j].isDigit()) continue
                 val jMin = (j downTo 0)
                     .find {
                         candidates.remove(i to j)
