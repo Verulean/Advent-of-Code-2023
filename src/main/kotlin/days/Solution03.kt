@@ -34,11 +34,11 @@ object Solution03 : Solution<List<String>>(AOC_YEAR, 3) {
                 val line = input[i]
                 if (!line[jMin].isDigit()) continue
                 var jMax = jMin
-                while (jMin > colIndices.first && line[jMin - 1].isDigit()) {
+                while (line.getOrNull(jMin - 1)?.digitToIntOrNull() != null) {
                     jMin--
                     candidates.remove(i to jMin)
                 }
-                while (jMax < colIndices.last && line[jMax + 1].isDigit()) {
+                while (line.getOrNull(jMax + 1)?.digitToIntOrNull() != null) {
                     jMax++
                     candidates.remove(i to jMax)
                 }
