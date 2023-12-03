@@ -32,7 +32,7 @@ object Solution03 : Solution<List<String>>(AOC_YEAR, 3) {
             while (candidates.isNotEmpty()) {
                 val (i, j) = candidates.pop()
                 val line = input[i]
-                val jMin = (j downTo 0)
+                val jMin = (j downTo colIndices.first)
                     .find {
                         candidates.remove(i to j)
                         !line[it].isDigit()
