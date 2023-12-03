@@ -28,6 +28,7 @@ object Solution03 : Solution<List<String>>(AOC_YEAR, 3) {
                     (j - 1..j + 1).filter(colIndices::contains)
                         .map { jj -> ii to jj }
                 }
+                .filter { it != i to j }
                 .toMutableSet()
             val numbers = mutableMapOf<Point2D, Int>()
             while (candidates.isNotEmpty()) {
