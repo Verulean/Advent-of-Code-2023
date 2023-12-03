@@ -31,11 +31,10 @@ object Solution03 : Solution<List<String>>(AOC_YEAR, 3) {
                 .toMutableSet()
             val numbers = mutableMapOf<Point2D, Int>()
             while (candidates.isNotEmpty()) {
-                val (ii, jj) = candidates.pop()
+                var (ii, jMin) = candidates.pop()
                 val row = input[ii]
-                if (!row[jj].isDigit()) continue
-                var jMin = jj
-                var jMax = jj
+                if (!row[jMin].isDigit()) continue
+                var jMax = jMin
                 while (jMin > colIndices.first && row[jMin - 1].isDigit()) {
                     jMin--
                     candidates.remove(ii to jMin)
@@ -44,8 +43,7 @@ object Solution03 : Solution<List<String>>(AOC_YEAR, 3) {
                     jMax++
                     candidates.remove(ii to jMax)
                 }
-                val number = row.substring(jMin, jMax + 1).toInt()
-                numbers[ii to jMin] = number
+                numbers[ii to jMin] = row.substring(jMin, jMax + 1).toInt()
             }
             return numbers
         }
