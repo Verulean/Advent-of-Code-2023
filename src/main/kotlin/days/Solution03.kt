@@ -32,16 +32,9 @@ object Solution03 : Solution<List<String>>(AOC_YEAR, 3) {
             while (candidates.isNotEmpty()) {
                 val (i, j) = candidates.pop()
                 val line = input[i]
-                val jMin = (j downTo colIndices.first)
-                    .find {
-                        candidates.remove(i to j)
-                        !line[it].isDigit()
-                    } ?: (colIndices.first - 1)
-                val jMax = (j..colIndices.last)
-                    .find {
-                        candidates.remove(i to j)
-                        !line[it].isDigit()
-                    } ?: (colIndices.last + 1)
+                val jMin = (j downTo colIndices.first).find { !line[it].isDigit() } ?: (colIndices.first - 1)
+                val jMax = (j..colIndices.last).find { !line[it].isDigit() } ?: (colIndices.last + 1)
+                (jMin..jMax).forEach { candidates.remove(i to it) }
                 numbers[i to jMin] = line.substring(jMin + 1, jMax).toInt()
             }
             return numbers
