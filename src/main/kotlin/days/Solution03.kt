@@ -5,16 +5,16 @@ import adventOfCode.Solution
 import adventOfCode.util.PairOf
 import adventOfCode.util.Point2D
 
-object Solution03 : Solution<List<CharArray>>(AOC_YEAR, 3) {
-    override fun getInput(handler: InputHandler) = handler.getInput("\n", true, String::toCharArray)
+object Solution03 : Solution<List<String>>(AOC_YEAR, 3) {
+    override fun getInput(handler: InputHandler) = handler.getInput("\n")
 
     private fun Char.isSymbol() = !this.isDigit() && this != '.'
 
     private fun Char.isGear() = this == '*'
 
-    override fun solve(input: List<CharArray>): PairOf<Int> {
+    override fun solve(input: List<String>): PairOf<Int> {
         val m = input.size
-        val n = input[0].size
+        val n = input[0].length
         val numberBuilder = StringBuilder(n)
         val gearMap = mutableMapOf<Point2D, MutableList<Int>>()
 
@@ -29,8 +29,8 @@ object Solution03 : Solution<List<CharArray>>(AOC_YEAR, 3) {
                 js.intersect(0..<n).any { jj ->
                     val cc = input[ii][jj]
                     if (cc.isGear()) {
-                        if (!gearMap.containsKey(ii to jj)) gearMap[ii to jj] = mutableListOf(number)
-                        else gearMap[ii to jj].add(number)
+                        if (ii to jj in gearMap) gearMap.getValue(ii to jj).add(number)
+                        else gearMap[ii to jj] = listOf(number)
                     }
                     cc.isSymbol()
                 }
