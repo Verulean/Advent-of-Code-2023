@@ -30,7 +30,7 @@ object Solution04 : Solution<List<Int>>(AOC_YEAR, 4) {
                 (i + 1..i + overlaps)
                     .filter(cardCounts.keys::contains)
                     .forEach { cardCounts.merge(it, cardCount, Int::plus) }
-                List(overlaps - 1) { 2 }.fold(1, Int::times)
+                1.shl(overlaps - 1)
             }
         val ans2 = cardCounts.values.sum()
         return ans1 to ans2
