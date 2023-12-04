@@ -23,14 +23,15 @@ object Solution04 : Solution<List<Int>>(AOC_YEAR, 4) {
         val cardCounts = input.indices
             .associateWith { 1 }
             .toMutableMap()
-        val ans1 = input.mapIndexedNotNull cardLoop@{ i, overlaps ->
-            if (overlaps == 0) return@cardLoop null
-            val cardCount = cardCounts.getValue(i)
-            (i + 1..i + overlaps)
-                .filter(cardCounts.keys::contains)
-                .forEach { cardCounts.merge(it, cardCount, Int::plus) }
-            List(overlaps - 1) { 2 }.fold(1, Int::times)
-        }.sum()
+        val ans1 = input.withIndex()
+            .filter { it.value > 0 }
+            .sumOf { (i, overlaps) ->
+                val cardCount = cardCounts.getValue(i)
+                (i + 1..i + overlaps)
+                    .filter(cardCounts.keys::contains)
+                    .forEach { cardCounts.merge(it, cardCount, Int::plus) }
+                List(overlaps - 1) { 2 }.fold(1, Int::times)
+            }
         val ans2 = cardCounts.values.sum()
         return ans1 to ans2
     }
