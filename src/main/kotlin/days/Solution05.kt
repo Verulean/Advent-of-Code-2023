@@ -34,7 +34,7 @@ object Solution05 : Solution<Pair<List<PlantNumber>, Almanac>>(AOC_YEAR, 5) {
         while (queue.isNotEmpty()) {
             val (currStart, currStop, i) = queue.removeFirst()
             if (i == almanac.size) {
-                bestLocation = bestLocation?.let { min(it, currStart) } ?: currStart
+                bestLocation = listOfNotNull(bestLocation, currStart).min()
                 continue
             }
             var requeue = true
