@@ -13,6 +13,15 @@ fun CharSequence.ints(allowNegatives: Boolean = true): List<Int> {
     return this.ints(allowNegatives) { it }
 }
 
+fun <T> CharSequence.longs(allowNegatives: Boolean = true, transform: (List<Long>) -> T): T {
+    val pattern = if (allowNegatives) "-?\\d+" else "\\d+"
+    return transform(findMatches(this, pattern).map(String::toLong))
+}
+
+fun CharSequence.longs(allowNegatives: Boolean = true): List<Long> {
+    return this.longs(allowNegatives) { it }
+}
+
 fun <T> CharSequence.doubles(allowNegatives: Boolean = true, transform: (List<Double>) -> T): T {
     val pattern = if (allowNegatives) "-?\\d+(?:\\.\\d+)?" else "\\d+(?:\\.\\d+)?"
     return transform(findMatches(this, pattern).map(String::toDouble))
