@@ -31,19 +31,16 @@ class CamelCard(private val cards: CharArray, val bid: Int, var jokerWildcard: B
         'A' to 14
     ).getOrDefault(this, 0)
 
-    private fun CharArray.cardValues() = this.asSequence().map { it.cardValue(jokerWildcard) }
-
-    private val handType = {
+    private fun handType(): HandType {
         val cardCounts = mutableMapOf<Char, Int>().withDefault { 0 }
-        cards.forEach { cardCounts[it] = cardCounts.getValue(it) + 1 }
-        val jokers = if (jokerWildcard) cardCounts.getValue('J') else 0
-        cardCounts['J'] = cardCounts.getValue('J') - jokers
+        cards.forEach { cardCounts[it] = cardCounts.getValue(it) + 1 }//cardCounts.merge(it, 1, Int::plus) }
+        val jokers = if (jokerWildcard) cardCounts.remove('J') ?: 0 else 0
 
         val sortedCounts = cardCounts.values.sortedDescending()
-        val first = sortedCounts.first()
-        val second = if (sortedCounts.size > 1) sortedCounts[1] else 0
+        val first = sortedCounts.firstOrNull() ?: 0
+        val second = sortedCounts.drop(1).firstOrNull() ?: 0
 
-        when {
+        return when {
             first + jokers == 5 -> HandType.FIVE_OF_A_KIND
             first + jokers == 4 -> HandType.FOUR_OF_A_KIND
             first + jokers == 3 && second == 2 -> HandType.FULL_HOUSE
@@ -54,13 +51,13 @@ class CamelCard(private val cards: CharArray, val bid: Int, var jokerWildcard: B
         }
     }
 
-    override fun compareTo(other: CamelCard): Int {
-        val handTypeDelta = handType().ordinal - other.handType().ordinal
-        if (handTypeDelta != 0) return handTypeDelta
-        return cards.cardValues().zip(other.cards.cardValues())
-            .map { it.first - it.second }
-            .firstOrNull { it != 0 } ?: 0
-    }
+    private val comparisonValues
+        get() = sequenceOf(handType().ordinal) + cards.asSequence().map { it.cardValue(jokerWildcard) }
+
+    override fun compareTo(other: CamelCard) = comparisonValues.zip(other.comparisonValues)
+        .map { it.first - it.second }
+        .filter { it != 0 }
+        .firstOrNull() ?: 0
 
     companion object {
         fun fromString(string: String): CamelCard {
