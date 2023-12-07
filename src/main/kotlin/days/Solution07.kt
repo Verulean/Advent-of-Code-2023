@@ -14,7 +14,7 @@ enum class HandType : Comparable<HandType> {
     FIVE_OF_A_KIND
 }
 
-class CamelCard(private val cards: CharArray, val bid: Int, var jokerWildcard: Boolean = false) : Comparable<CamelCard> {
+class CamelHand(private val cards: CharArray, val bid: Int, var jokerWildcard: Boolean = false) : Comparable<CamelHand> {
     private fun getCardValue(c: Char) = mapOf(
         '2' to 2,
         '3' to 3,
@@ -55,24 +55,24 @@ class CamelCard(private val cards: CharArray, val bid: Int, var jokerWildcard: B
     private val comparisonValues
         get() = sequenceOf(handType.ordinal) + cards.asSequence().map(::getCardValue)
 
-    override fun compareTo(other: CamelCard) = comparisonValues.zip(other.comparisonValues)
+    override fun compareTo(other: CamelHand) = comparisonValues.zip(other.comparisonValues)
         .map { it.first - it.second }
         .filter { it != 0 }
         .firstOrNull() ?: 0
 
     companion object {
-        fun fromString(string: String): CamelCard {
+        fun fromString(string: String): CamelHand {
             val (cards, bid) = string.split(' ')
-            return CamelCard(cards.toCharArray(), bid.toInt())
+            return CamelHand(cards.toCharArray(), bid.toInt())
         }
     }
 }
 
-object Solution07 : Solution<List<CamelCard>>(AOC_YEAR, 7) {
-    override fun getInput(handler: InputHandler) = handler.getInput("\n").map(CamelCard::fromString)
+object Solution07 : Solution<List<CamelHand>>(AOC_YEAR, 7) {
+    override fun getInput(handler: InputHandler) = handler.getInput("\n").map(CamelHand::fromString)
 
-    override fun solve(input: List<CamelCard>): PairOf<Int> {
-        fun List<CamelCard>.totalWinnings() = this.withIndex().sumOf { (it.index + 1) * it.value.bid }
+    override fun solve(input: List<CamelHand>): PairOf<Int> {
+        fun List<CamelHand>.totalWinnings() = this.withIndex().sumOf { (it.index + 1) * it.value.bid }
         val hands = input.toMutableList()
         hands.sort()
         val ans1 = hands.totalWinnings()
