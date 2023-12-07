@@ -33,7 +33,7 @@ class CamelCard(private val cards: CharArray, val bid: Int, var jokerWildcard: B
 
     private fun handType(): HandType {
         val cardCounts = mutableMapOf<Char, Int>().withDefault { 0 }
-        cards.forEach { cardCounts[it] = cardCounts.getValue(it) + 1 }//cardCounts.merge(it, 1, Int::plus) }
+        cards.forEach { cardCounts.merge(it, 1, Int::plus) }
         val jokers = if (jokerWildcard) cardCounts.remove('J') ?: 0 else 0
 
         val sortedCounts = cardCounts.values.sortedDescending()
