@@ -14,8 +14,8 @@ enum class HandType : Comparable<HandType> {
     FIVE_OF_A_KIND
 }
 
-class CamelCard(val cards: CharArray, val bid: Int, var jokerWildcard: Boolean = false) : Comparable<CamelCard> {
-    fun Char.cardValue(jokerWildcard: Boolean = false) = mapOf(
+class CamelCard(private val cards: CharArray, val bid: Int, var jokerWildcard: Boolean = false) : Comparable<CamelCard> {
+    private fun Char.cardValue(jokerWildcard: Boolean = false) = mapOf(
         '2' to 2,
         '3' to 3,
         '4' to 4,
