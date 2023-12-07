@@ -15,7 +15,7 @@ enum class HandType : Comparable<HandType> {
 }
 
 class CamelCard(private val cards: CharArray, val bid: Int, var jokerWildcard: Boolean = false) : Comparable<CamelCard> {
-    private fun Char.cardValue(jokerWildcard: Boolean = false) = mapOf(
+    private fun getCardValue(c: Char) = mapOf(
         '2' to 2,
         '3' to 3,
         '4' to 4,
@@ -29,30 +29,31 @@ class CamelCard(private val cards: CharArray, val bid: Int, var jokerWildcard: B
         'Q' to 12,
         'K' to 13,
         'A' to 14
-    ).getOrDefault(this, 0)
+    ).getOrDefault(c, 0)
 
-    private fun handType(): HandType {
-        val cardCounts = mutableMapOf<Char, Int>().withDefault { 0 }
-        cards.forEach { cardCounts.merge(it, 1, Int::plus) }
-        val jokers = if (jokerWildcard) cardCounts.remove('J') ?: 0 else 0
+    private val handType: HandType
+        get() {
+            val cardCounts = mutableMapOf<Char, Int>().withDefault { 0 }
+            cards.forEach { cardCounts.merge(it, 1, Int::plus) }
+            val jokers = if (jokerWildcard) cardCounts.remove('J') ?: 0 else 0
 
-        val sortedCounts = cardCounts.values.sortedDescending()
-        val first = sortedCounts.firstOrNull() ?: 0
-        val second = sortedCounts.drop(1).firstOrNull() ?: 0
+            val sortedCounts = cardCounts.values.sortedDescending()
+            val first = sortedCounts.firstOrNull() ?: 0
+            val second = sortedCounts.drop(1).firstOrNull() ?: 0
 
-        return when {
-            first + jokers == 5 -> HandType.FIVE_OF_A_KIND
-            first + jokers == 4 -> HandType.FOUR_OF_A_KIND
-            first + jokers == 3 && second == 2 -> HandType.FULL_HOUSE
-            first + jokers == 3 -> HandType.THREE_OF_A_KIND
-            first == 2 && second == 2 -> HandType.TWO_PAIR
-            first + jokers == 2 -> HandType.ONE_PAIR
-            else -> HandType.HIGH_CARD
+            return when {
+                first + jokers == 5 -> HandType.FIVE_OF_A_KIND
+                first + jokers == 4 -> HandType.FOUR_OF_A_KIND
+                first + jokers == 3 && second == 2 -> HandType.FULL_HOUSE
+                first + jokers == 3 -> HandType.THREE_OF_A_KIND
+                first == 2 && second == 2 -> HandType.TWO_PAIR
+                first + jokers == 2 -> HandType.ONE_PAIR
+                else -> HandType.HIGH_CARD
+            }
         }
-    }
 
     private val comparisonValues
-        get() = sequenceOf(handType().ordinal) + cards.asSequence().map { it.cardValue(jokerWildcard) }
+        get() = sequenceOf(handType.ordinal) + cards.asSequence().map(::getCardValue)
 
     override fun compareTo(other: CamelCard) = comparisonValues.zip(other.comparisonValues)
         .map { it.first - it.second }
