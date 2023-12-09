@@ -2,6 +2,7 @@ package days
 
 import adventOfCode.InputHandler
 import adventOfCode.Solution
+import adventOfCode.util.PairOf
 import adventOfCode.util.ints
 
 typealias Layer = List<Int>
@@ -24,7 +25,7 @@ object Solution09 : Solution<List<Layer>>(AOC_YEAR, 9) {
 
     private val Pyramid.prevValue get() = this.map { it.first() }.foldRight(0, Int::minus)
 
-    override fun solve(input: List<Layer>): Pair<Any?, Any?> {
+    override fun solve(input: List<Layer>): PairOf<Int> {
         val pyramids = input.map(::pascalify)
         return pyramids.sumOf { it.nextValue } to pyramids.sumOf { it.prevValue }
     }
