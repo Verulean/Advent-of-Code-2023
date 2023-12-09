@@ -80,13 +80,11 @@ object Solution08 : Solution<Pair<TurnOrder, NodeMap>>(AOC_YEAR, 8) {
         // Apply coprime case of CRT
         val coprimeCongruences = maxPrimePower.entries.associate { (p, power) -> p `^` power to maxPrimeRemainder.getValue(p) }
         val product = coprimeCongruences.keys.reduce(Long::times)
-        var a = 0L
-        coprimeCongruences.entries.forEach { (m, r) ->
+        return coprimeCongruences.entries.sumOf { (m, r) ->
             val M = product / m
             val N = M.modularInverse(m)
-            a += r * M * N
+            r * M * N
         }
-        return a
     }
 
     private fun findCycleCongruence(turnOrder: TurnOrder, nodeMap: NodeMap, startNode: String): TripleOf<CycleNumber> {
