@@ -6,25 +6,25 @@ import adventOfCode.util.PairOf
 import adventOfCode.util.ints
 
 typealias Layer = List<Int>
-typealias Sides = PairOf<Int>
-typealias Pyramid = List<Sides>
+typealias Pyramid = PairOf<List<Int>>
 
 object Solution09 : Solution<List<Layer>>(AOC_YEAR, 9) {
     override fun getInput(handler: InputHandler) = handler.getInput("\n").map(String::ints)
 
     private fun pascalify(base: Layer): Pyramid {
-        val pyramid = mutableListOf<PairOf<Int>>()
+        val pyramid = mutableListOf<Int>() to mutableListOf<Int>()
         var currLayer = base
         while (currLayer.any { it != 0 }) {
-            pyramid.add(currLayer.first() to currLayer.last())
+            pyramid.first.add(currLayer.first())
+            pyramid.second.add(currLayer.last())
             currLayer = currLayer.zip(currLayer.drop(1)).map { it.second - it.first }
         }
         return pyramid
     }
 
-    private val Pyramid.nextValue get() = this.sumOf(Sides::second)
+    private val Pyramid.nextValue get() = this.second.sum()
 
-    private val Pyramid.prevValue get() = this.map(Sides::first).foldRight(0, Int::minus)
+    private val Pyramid.prevValue get() = this.first.foldRight(0, Int::minus)
 
     override fun solve(input: List<Layer>): PairOf<Int> {
         val pyramids = input.map(::pascalify)
