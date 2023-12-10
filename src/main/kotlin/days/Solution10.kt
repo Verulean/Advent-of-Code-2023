@@ -89,7 +89,7 @@ object Solution10 : Solution<Grid>(AOC_YEAR, 10) {
             if (currPos in seen) continue
             seen.add(currPos)
             currPos.neighbors
-                .filter { (direction, adjPos) -> currPos.isConnectedTo(adjPos, direction) }
+                .filter { (direction, adjPos) -> adjPos !in seen && currPos.isConnectedTo(adjPos, direction) }
                 .map { it.second }
                 .forEach { adjPos ->
                     loopGrid[adjPos.first][adjPos.second] = true
