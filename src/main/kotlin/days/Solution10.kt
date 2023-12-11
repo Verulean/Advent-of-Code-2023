@@ -4,6 +4,7 @@ import adventOfCode.InputHandler
 import adventOfCode.Solution
 import adventOfCode.util.Point2D
 import adventOfCode.util.plus
+import kotlin.math.abs
 
 typealias Grid = Array<CharArray>
 
@@ -13,8 +14,6 @@ private operator fun Grid.set(point: Point2D, value: Char) {
 }
 
 object Solution10 : Solution<Grid>(AOC_YEAR, 10) {
-    private var grid: Grid = arrayOf()
-
     override fun getInput(handler: InputHandler) = handler.getInput("\n").map(String::toCharArray).toTypedArray()
 
     private enum class Direction(val vector: Point2D) {
@@ -31,6 +30,8 @@ object Solution10 : Solution<Grid>(AOC_YEAR, 10) {
         Direction.WEST to Direction.EAST
     ).getValue(this)
 
+    private val pipeBends = setOf('L', 'J', '7', 'F')
+
     private val pipeOpenings = mapOf(
         '|' to setOf(Direction.NORTH, Direction.SOUTH),
         '-' to setOf(Direction.EAST, Direction.WEST),
@@ -41,20 +42,7 @@ object Solution10 : Solution<Grid>(AOC_YEAR, 10) {
         '.' to setOf()
     )
 
-    private var Point2D.tile
-        get() = grid[this]
-        set(value) {
-            grid[this] = value
-        }
-
-    private val Point2D.isInBounds get() = this.first in grid.indices && this.second in grid[0].indices
-
-    private val Point2D.neighbors
-        get() = Direction.entries
-            .map { d -> d to this + d.vector }
-            .filter { it.second.isInBounds }
-
-    private fun findStart(): Point2D {
+    private fun findStart(grid: Grid): Point2D {
         grid.forEachIndexed { i, row ->
             val j = row.indexOf('S')
             if (j >= 0) return i to j
@@ -62,51 +50,31 @@ object Solution10 : Solution<Grid>(AOC_YEAR, 10) {
         return -1 to -1
     }
 
-    private fun characterizeStart(pos: Point2D): Char {
-        val startOpenings = mutableSetOf<Direction>()
-        pos.neighbors
-            .forEach { (direction, pos) ->
-                if (-direction in pipeOpenings.getValue(pos.tile)) startOpenings.add(direction)
-            }
-        return pipeOpenings.entries.first { (_, openings) -> (startOpenings - openings).isEmpty() }.key
+    private fun traversePath(grid: Grid, position: Point2D, direction: Direction): Pair<List<Point2D>, Int> {
+        val vertices = mutableListOf<Point2D>()
+        var boundaryPoints = 0
+        var p = position
+        var d = direction
+        do {
+            p += d.vector
+            val tile = grid[p]
+            d = pipeOpenings.getValue(tile).first { it != -d }
+            if (tile in pipeBends) vertices.add(p)
+            boundaryPoints++
+        } while (p != position)
+        return vertices to boundaryPoints
     }
 
-    private fun Point2D.isConnectedTo(other: Point2D, direction: Direction) =
-        direction in pipeOpenings.getValue(tile) && -direction in pipeOpenings.getValue(other.tile)
-
     override fun solve(input: Grid): Pair<Any?, Any?> {
-        grid = input
-        // Determine starting pipe
-        val startPos = findStart()
-        startPos.tile = characterizeStart(startPos)
-        // Part 1: Flood-fill loop, answer is half of loop size
-        var ans1 = 1
-        val loopGrid = Array(grid.size) { Array(grid[0].size) { false } }
-        val seen = mutableSetOf<Point2D>()
-        val queue = mutableListOf(startPos)
-        while (queue.isNotEmpty()) {
-            val currPos = queue.removeFirst()
-            if (currPos in seen) continue
-            seen.add(currPos)
-            currPos.neighbors
-                .filter { (direction, adjPos) -> adjPos !in seen && currPos.isConnectedTo(adjPos, direction) }
-                .map { it.second }
-                .forEach { adjPos ->
-                    loopGrid[adjPos.first][adjPos.second] = true
-                    queue.add(adjPos)
-                    ans1++
-                }
-        }
-        ans1 /= 2
-        // Part 2:
-        var ans2 = 0
-        grid.forEachIndexed { i, row ->
-            var inside = false
-            row.forEachIndexed { j, tile ->
-                if (tile in setOf('|', 'L', 'J')) inside = !inside
-                else if (inside && tile == '.') ans2++
-            }
-        }
-        return ans1 to ans2
+        val startPosition = findStart(input)
+        val startOpenings = Direction.entries.filter { -it in pipeOpenings.getValue(input[startPosition + it.vector]) }
+        input[startPosition] = pipeOpenings.entries.first { (_, openings) -> (startOpenings - openings).isEmpty() }.key
+        val (vertices, boundaryPoints) = traversePath(input, startPosition, startOpenings.first())
+        // Shoelace Theorem + Pick's Theorem
+        val area = abs(vertices.withIndex().sumOf { (index, p1) ->
+            val p2 = vertices[(index + 1).rem(vertices.size)]
+            p1.first * p2.second - p1.second * p2.first
+        }) / 2
+        return boundaryPoints / 2 to area - boundaryPoints / 2 + 1
     }
 }
