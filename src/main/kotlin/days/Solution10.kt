@@ -5,7 +5,6 @@ import adventOfCode.Solution
 import adventOfCode.util.PairOf
 import adventOfCode.util.Point2D
 import adventOfCode.util.plus
-import java.util.*
 import kotlin.math.abs
 
 typealias Grid = Array<CharArray>
