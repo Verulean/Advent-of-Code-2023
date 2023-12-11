@@ -23,7 +23,7 @@ object Solution11 : Solution<List<CharArray>>(AOC_YEAR, 11) {
                         val (sy1, sy2) = if (y1 < y2) y1 to y2 else y2 to y1
                         val manhattan = sx2 - sx1 + sy2 - sy1
                         val crosses =
-                            blankXs.filter((sx1..sx2)::contains).size + blankYs.filter((sy1..sy2)::contains).size
+                            blankXs.filter { it in sx1..sx2 }.size + blankYs.filter { it in sy1..sy2 }.size
                         expansionFactors.forEachIndexed { j, expansion -> ret[j] += manhattan + (expansion - 1) * crosses }
                     }
             }
