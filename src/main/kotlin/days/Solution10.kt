@@ -5,6 +5,7 @@ import adventOfCode.Solution
 import adventOfCode.util.PairOf
 import adventOfCode.util.Point2D
 import adventOfCode.util.plus
+import java.util.*
 import kotlin.math.abs
 
 typealias Grid = Array<CharArray>
@@ -72,8 +73,7 @@ object Solution10 : Solution<Grid>(AOC_YEAR, 10) {
         input[startPosition] = pipeOpenings.entries.first { (_, openings) -> (startOpenings - openings).isEmpty() }.key
         val (vertices, boundaryPoints) = traversePath(input, startPosition, startOpenings.first())
         // Shoelace Theorem + Pick's Theorem
-        val area = abs(vertices.withIndex().sumOf { (index, p1) ->
-            val p2 = vertices[(index + 1).rem(vertices.size)]
+        val area = abs(vertices.zip(vertices.drop(1) + vertices.take(1)).sumOf { (p1, p2) ->
             p1.first * p2.second - p1.second * p2.first
         }) / 2
         return boundaryPoints / 2 to area - boundaryPoints / 2 + 1
