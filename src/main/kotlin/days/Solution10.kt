@@ -2,6 +2,7 @@ package days
 
 import adventOfCode.InputHandler
 import adventOfCode.Solution
+import adventOfCode.util.PairOf
 import adventOfCode.util.Point2D
 import adventOfCode.util.plus
 import kotlin.math.abs
@@ -65,7 +66,7 @@ object Solution10 : Solution<Grid>(AOC_YEAR, 10) {
         return vertices to boundaryPoints
     }
 
-    override fun solve(input: Grid): Pair<Any?, Any?> {
+    override fun solve(input: Grid): PairOf<Int> {
         val startPosition = findStart(input)
         val startOpenings = Direction.entries.filter { -it in pipeOpenings.getValue(input[startPosition + it.vector]) }
         input[startPosition] = pipeOpenings.entries.first { (_, openings) -> (startOpenings - openings).isEmpty() }.key
