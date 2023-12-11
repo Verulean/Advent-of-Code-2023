@@ -68,7 +68,11 @@ object Solution10 : Solution<Grid>(AOC_YEAR, 10) {
 
     override fun solve(input: Grid): PairOf<Int> {
         val startPosition = findStart(input)
-        val startOpenings = Direction.entries.filter { -it in pipeOpenings.getValue(input[startPosition + it.vector]) }
+        val startOpenings = Direction.entries.filter { d ->
+            val adj = startPosition + d.vector
+            if (adj.first !in input.indices || adj.second !in input[0].indices) false
+            else -d in pipeOpenings.getValue(input[adj])
+        }
         input[startPosition] = pipeOpenings.entries.first { (_, openings) -> (startOpenings - openings).isEmpty() }.key
         val (vertices, boundaryPoints) = traversePath(input, startPosition, startOpenings.first())
         // Shoelace Formula + Pick's Theorem
