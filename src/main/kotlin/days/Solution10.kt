@@ -71,7 +71,7 @@ object Solution10 : Solution<Grid>(AOC_YEAR, 10) {
         val startOpenings = Direction.entries.filter { -it in pipeOpenings.getValue(input[startPosition + it.vector]) }
         input[startPosition] = pipeOpenings.entries.first { (_, openings) -> (startOpenings - openings).isEmpty() }.key
         val (vertices, boundaryPoints) = traversePath(input, startPosition, startOpenings.first())
-        // Shoelace Theorem + Pick's Theorem
+        // Shoelace Formula + Pick's Theorem
         val area = abs(vertices.zip(vertices.drop(1) + vertices.take(1)).sumOf { (p1, p2) ->
             p1.first * p2.second - p1.second * p2.first
         }) / 2
