@@ -7,14 +7,14 @@ import adventOfCode.util.Point2D
 import adventOfCode.util.plus
 import kotlin.math.abs
 
-typealias Grid = Array<CharArray>
+typealias CharGrid = Array<CharArray>
 
-private operator fun Grid.get(point: Point2D) = this[point.first][point.second]
-private operator fun Grid.set(point: Point2D, value: Char) {
+private operator fun CharGrid.get(point: Point2D) = this[point.first][point.second]
+private operator fun CharGrid.set(point: Point2D, value: Char) {
     this[point.first][point.second] = value
 }
 
-object Solution10 : Solution<Grid>(AOC_YEAR, 10) {
+object Solution10 : Solution<CharGrid>(AOC_YEAR, 10) {
     override fun getInput(handler: InputHandler) = handler.getInput("\n").map(String::toCharArray).toTypedArray()
 
     private enum class Direction(val vector: Point2D) {
@@ -43,7 +43,7 @@ object Solution10 : Solution<Grid>(AOC_YEAR, 10) {
         '.' to setOf()
     )
 
-    private fun findStart(grid: Grid): Point2D {
+    private fun findStart(grid: CharGrid): Point2D {
         grid.forEachIndexed { i, row ->
             val j = row.indexOf('S')
             if (j >= 0) return i to j
@@ -51,7 +51,7 @@ object Solution10 : Solution<Grid>(AOC_YEAR, 10) {
         return -1 to -1
     }
 
-    private fun traversePath(grid: Grid, position: Point2D, direction: Direction): Pair<List<Point2D>, Int> {
+    private fun traversePath(grid: CharGrid, position: Point2D, direction: Direction): Pair<List<Point2D>, Int> {
         val vertices = mutableListOf<Point2D>()
         var boundaryPoints = 0
         var p = position
@@ -66,7 +66,7 @@ object Solution10 : Solution<Grid>(AOC_YEAR, 10) {
         return vertices to boundaryPoints
     }
 
-    override fun solve(input: Grid): PairOf<Int> {
+    override fun solve(input: CharGrid): PairOf<Int> {
         val startPosition = findStart(input)
         val startOpenings = Direction.entries.filter { d ->
             val adj = startPosition + d.vector
