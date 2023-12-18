@@ -9,7 +9,7 @@ typealias IntGrid = List<List<Int>>
 typealias CrucibleState = Pair<Point2D, Point2D>
 
 object Solution17 : Solution<IntGrid>(AOC_YEAR, 17) {
-    override fun getInput(handler: InputHandler) = handler.getInput("\n").map { it.toCharArray().map(Char::digitToInt) }
+    override fun getInput(handler: InputHandler) = handler.getInput("\n").map { it.map(Char::digitToInt) }
 
     private val directions = listOf(1 to 0, 0 to 1, -1 to 0, 0 to -1)
 
