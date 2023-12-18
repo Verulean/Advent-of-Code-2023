@@ -16,6 +16,11 @@ operator fun Point2D.minus(other: Point2D) = Point2D(
     this.second - other.second
 )
 
+operator fun Point2D.times(n: Int) = Point2D(
+    this.first * n,
+    this.second * n
+)
+
 operator fun Point2D.unaryMinus() = Point2D(-this.first, -this.second)
 
 typealias Point3D = Triple<Int, Int, Int>
