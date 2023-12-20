@@ -53,7 +53,7 @@ object Solution20 : Solution<Triple<ModuleGraph, FlipFlopState, ConjunctionState
         // Part 1
         val pulses = mutableMapOf(false to 0, true to 0)
         val queue = ArrayDeque<Triple<String, String, Boolean>>()
-        for (t in 1..1000) {
+        repeat(1000) {
             queue.add(Triple("button", "broadcaster", false))
             while (queue.isNotEmpty()) {
                 val (sender, receiver, state) = queue.removeFirst()
