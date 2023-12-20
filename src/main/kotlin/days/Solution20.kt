@@ -48,33 +48,16 @@ object Solution20 : Solution<Triple<ModuleGraph, FlipFlopState, ConjunctionState
         return inverseGraph
     }
 
-    override fun solve(input: Triple<ModuleGraph, FlipFlopState, ConjunctionState>): Pair<Any?, Any?> {
+    override fun solve(input: Triple<ModuleGraph, FlipFlopState, ConjunctionState>): Pair<Int, Long> {
         val (graph, flipFlops, conjunctions) = input
-        var lowPulses = 0
-        var highPulses = 0
-        val inverseGraph = graph.invert()
-        val cycleStarts = inverseGraph.getValue(
-            inverseGraph.getValue("rx").first()
-        ).associateWith { -1 }.toMutableMap()
-        var ans2 = 1L
+        // Part 1
+        val pulses = mutableMapOf(false to 0, true to 0)
         val queue = ArrayDeque<Triple<String, String, Boolean>>()
-        for (t in 1..10000) {
+        for (t in 1..1000) {
             queue.add(Triple("button", "broadcaster", false))
             while (queue.isNotEmpty()) {
                 val (sender, receiver, state) = queue.removeFirst()
-                if (t <= 1000) when (state) {
-                    true -> highPulses++
-                    false -> lowPulses++
-                }
-                if (!state && receiver in cycleStarts) {
-                    val prev = cycleStarts.getValue(receiver)
-                    if (prev == -1) cycleStarts[receiver] = t
-                    else {
-                        ans2 *= t - prev
-                        cycleStarts.remove(receiver)
-                        if (cycleStarts.isEmpty()) return lowPulses * highPulses to ans2
-                    }
-                }
+                pulses.merge(state, 1, Int::plus)
                 var newState = state
                 if (receiver in flipFlops) {
                     if (state) continue
@@ -87,6 +70,23 @@ object Solution20 : Solution<Triple<ModuleGraph, FlipFlopState, ConjunctionState
                 graph[receiver]?.forEach { queue.add(Triple(receiver, it, newState)) }
             }
         }
-        throw Exception("unreachable")
+        // Part 2
+        val inverseGraph = graph.invert()
+        val binaryEncoders = inverseGraph.getValue(inverseGraph.getValue("rx").first())
+            .flatMap(inverseGraph::getValue)
+            .toSet()
+        val ans2 = graph.getValue("broadcaster").map { counterStart ->
+            var curr = counterStart
+            val bits = mutableListOf<Boolean>()
+            while (curr !in binaryEncoders) {
+                val receivers = graph.getValue(curr)
+                val conj = receivers.intersect(binaryEncoders)
+                val flip = receivers - binaryEncoders
+                bits.add(conj.isNotEmpty())
+                curr = flip.firstOrNull() ?: conj.first()
+            }
+            bits.reversed().fold(0L) { acc, b -> acc.shl(1) + if (b) 1 else 0 }
+        }.reduce(Long::times)
+        return pulses.values.reduce(Int::times) to ans2
     }
 }
