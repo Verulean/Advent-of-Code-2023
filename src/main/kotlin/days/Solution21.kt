@@ -14,10 +14,14 @@ object Solution21 : Solution<Triple<Set<Point2D>, Point2D, Int>>(AOC_YEAR, 21) {
         var start = -1 to -1
         val garden = mutableSetOf<Point2D>()
         grid.forEachIndexed { i, row ->
-            row.forEachIndexed charLoop@{ j, c ->
-                if (c == '#') return@charLoop
-                garden.add(i to j)
-                if (c == 'S') start = i to j
+            row.forEachIndexed { j, c ->
+                when (c) {
+                    '.' -> garden.add(i to j)
+                    'S' -> {
+                        garden.add(i to j)
+                        start = i to j
+                    }
+                }
             }
         }
         return Triple(garden, start, n)

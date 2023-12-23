@@ -25,15 +25,15 @@ object Solution23 : Solution<Triple<TrailMap, Point2D, Point2D>>(AOC_YEAR, 23) {
             val (n, curr, junction) = queue.removeLast()
             var paths = 0
             val nextPoints = mutableListOf<Point2D>()
-            directions.forEach adjLoop@{ d ->
+            for (d in directions) {
                 val (ii, jj) = curr + d
-                if (ii !in grid.indices || jj !in grid[0].indices) return@adjLoop
+                if (ii !in grid.indices || jj !in grid[0].indices) continue
                 val c = grid[ii][jj]
-                if (c == '#') return@adjLoop
+                if (c == '#') continue
                 paths++
-                if (ii to jj in seen) return@adjLoop
+                if (ii to jj in seen) continue
                 val slopeDirection = slopeToDirection[c]
-                if (slopeDirection != null && d != slopeDirection) return@adjLoop
+                if (slopeDirection != null && d != slopeDirection) continue
                 nextPoints.add(ii to jj)
             }
             if (paths > 2 || curr == end) {
