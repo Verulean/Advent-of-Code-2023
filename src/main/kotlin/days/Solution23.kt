@@ -15,7 +15,7 @@ private val slopeToDirection = listOf('v', '>', '^', '<').zip(directions).toMap(
 object Solution23 : Solution<Triple<TrailMap, Point2D, Point2D>>(AOC_YEAR, 23) {
     override fun getInput(handler: InputHandler): Triple<TrailMap, Point2D, Point2D> {
         val grid = handler.getInput("\n")
-        val digraph = mutableMapOf<Point2D, Map<Point2D, Int>>().withDefault { mapOf() }
+        val digraph = mutableMapOf<Point2D, MutableMap<Point2D, Int>>().withDefault { mutableMapOf() }
         val start = 0 to 1
         val end = grid.size - 1 to grid[0].length - 2
         val seen = mutableSetOf<Point2D>()
@@ -37,14 +37,23 @@ object Solution23 : Solution<Triple<TrailMap, Point2D, Point2D>>(AOC_YEAR, 23) {
                 nextPoints.add(ii to jj)
             }
             if (paths > 2 || curr == end) {
-                digraph[junction] = digraph.getValue(junction) + (curr to n)
+                val adjs = digraph.getValue(junction)
+                adjs[curr] = n
+                digraph[junction] = adjs
                 nextPoints.forEach { queue.add(Triple(1, it, curr)) }
             } else {
                 seen.add(curr)
                 nextPoints.forEach { queue.add(Triple(n + 1, it, junction)) }
             }
         }
-        return Triple(digraph, start, end)
+        val (firstJunction, startCost) = digraph.getValue(start).entries.first()
+        val (lastJunction, endCost) = digraph.entries.first { end in it.value }.let { it.key to it.value.getValue(end) }
+        digraph.remove(start)
+        digraph.entries.forEach { (node, adjs) ->
+            if (node == firstJunction) adjs.keys.forEach { adjs.merge(it, startCost, Int::plus) }
+            if (lastJunction in adjs) adjs.merge(lastJunction, endCost, Int::plus)
+        }
+        return Triple(digraph, firstJunction, lastJunction)
     }
 
     private fun TrailMap.findLongestPath(start: Point2D, end: Point2D): Int {
