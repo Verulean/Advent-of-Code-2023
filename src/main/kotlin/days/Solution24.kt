@@ -18,15 +18,15 @@ data class Hailstone(val x: Long, val y: Long, val z: Long, val vx: Long, val vy
 object Solution24 : Solution<List<Hailstone>>(AOC_YEAR, 24) {
     override fun getInput(handler: InputHandler) = handler.getInput("\n").map { Hailstone(it.longs()) }
 
-    private fun intersects(a: Hailstone, b: Hailstone): Boolean {
-        if (a.vx * b.vy == a.vy * b.vx) return false
+    private infix fun Hailstone.intersects(other: Hailstone): Boolean {
+        if (vx * other.vy == vy * other.vx) return false
         val validRange = 2e14..4e14
-        val x = (b.y - a.y + a.m * a.x - b.m * b.x) / (a.m - b.m)
-        val y = a.y + a.m * (x - a.x)
-        return (x in validRange
-            && y in validRange
-            && (x - a.x) / a.vx >= 0
-            && (x - b.x) / b.vx >= 0
+        val x0 = (other.y - y + m * x - other.m * other.x) / (m - other.m)
+        val y0 = y + m * (x0 - x)
+        return (x0 in validRange
+            && y0 in validRange
+            && (x0 - this.x) / vx >= 0
+            && (x0 - other.x) / other.vx >= 0
             )
     }
 
@@ -56,7 +56,7 @@ object Solution24 : Solution<List<Hailstone>>(AOC_YEAR, 24) {
     }
 
     override fun solve(input: List<Hailstone>): Pair<Int, Long> {
-        val ans1 = input.withIndex().sumOf { (i, a) -> input.drop(i + 1).filter { intersects(a, it) }.size }
+        val ans1 = input.withIndex().sumOf { (i, a) -> input.drop(i + 1).filter { it intersects a }.size }
         val ans2 = findRock(input)
         return ans1 to ans2
     }
