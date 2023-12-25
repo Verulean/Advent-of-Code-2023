@@ -3,14 +3,14 @@ package days
 import adventOfCode.InputHandler
 import adventOfCode.Solution
 import org.jgrapht.alg.StoerWagnerMinimumCut
-import org.jgrapht.graph.DefaultUndirectedGraph
-import org.jgrapht.graph.DefaultWeightedEdge
+import org.jgrapht.graph.DefaultEdge
+import org.jgrapht.graph.SimpleGraph
 
-typealias ComponentGraph = DefaultUndirectedGraph<String, DefaultWeightedEdge>
+typealias ComponentGraph = SimpleGraph<String, DefaultEdge>
 
 object Solution25 : Solution<ComponentGraph>(AOC_YEAR, 25) {
     override fun getInput(handler: InputHandler): ComponentGraph {
-        val graph = ComponentGraph(DefaultWeightedEdge::class.java)
+        val graph = ComponentGraph(DefaultEdge::class.java)
         handler.getInput("\n").forEach { line ->
             val (src, dests) = line.split(": ")
             graph.addVertex(src)
