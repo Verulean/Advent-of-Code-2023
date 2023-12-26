@@ -53,7 +53,6 @@ private class RockAndRoll(
             roundToIteration[round to d]?.let { j ->
                 cycleStart = j
                 cycleLength = i - j + 1
-                println("Found cycle, start: ${cycleStart} length: ${cycleLength}")
                 return
             }
             roundToIteration[round to d] = i + 1L
